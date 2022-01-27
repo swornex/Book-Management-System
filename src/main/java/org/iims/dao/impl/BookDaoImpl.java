@@ -28,7 +28,7 @@ public class BookDaoImpl implements BookDao {
 
     @Override
     public int update(Book book) throws ClassNotFoundException, SQLException {
-        final String QUERY = "UPDATE student set book = ?, author = ?, page = ?, genre = ?, stock=? WHERE id = ?";
+        final String QUERY = "UPDATE book set book = ?, author = ?, page = ?, genre = ?, stock=? WHERE id = ?";
         connection = DatabaseConnect.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(QUERY);
         preparedStatement.setString(1, book.getBook());
@@ -36,18 +36,20 @@ public class BookDaoImpl implements BookDao {
         preparedStatement.setInt(3, book.getPage());
         preparedStatement.setString(4, book.getGenre());
         preparedStatement.setInt(5, book.getStock());
-        preparedStatement.setInt(5, book.getId());
+        preparedStatement.setInt(6, book.getId());
         return preparedStatement.executeUpdate();
-
     }
 
     @Override
     public int delete(int id) throws ClassNotFoundException, SQLException {
-        final String QUERY = "DELETE FROM student where id = ?";
-        connection = DatabaseConnect.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(QUERY);
-        preparedStatement.setInt(1, id);
-        return preparedStatement.executeUpdate();
+        if(findOne(id).getStock()==0) {
+            final String QUERY = "DELETE FROM book where id = ?";
+            connection = DatabaseConnect.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(QUERY);
+            preparedStatement.setInt(1, id);
+            return preparedStatement.executeUpdate();
+        }
+        return 0;
     }
 
     @Override
